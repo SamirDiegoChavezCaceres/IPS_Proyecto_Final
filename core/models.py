@@ -5,11 +5,15 @@ from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 
+AGE_CHOICES = (
+    ('A', 'Adulto'),
+    ('N', 'Niño'),
+    ('BB', 'Bebe'),
+)
 
 CATEGORY_CHOICES = (
     ('Z', 'Zapatos'),
     ('B', 'Botas'),
-    ('NZ', 'Zapatos Niños')
 )
 
 LABEL_CHOICES = (
@@ -38,12 +42,13 @@ class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
+    age = models.CharField(choices=AGE_CHOICES, max_length=2)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
+    color = models.CharField(max_length=100)
     label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField()
-    color = models.CharField(max_length=100)
 
     def __str__(self):
         return self.title
