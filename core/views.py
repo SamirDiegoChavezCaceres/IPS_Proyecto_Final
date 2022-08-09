@@ -1,6 +1,5 @@
 import random
 import string
-
 import stripe
 from django.conf import settings
 from django.contrib import messages
@@ -359,31 +358,28 @@ def filtros(request):
         print(priceMin)
         print(priceMax)
 
-        if (colors == None and str(priceMax) == "" and str(priceMin) == ""):
-            print("solor categoria")
+        if (colors == None and str(priceMax) == "" and str(priceMin) == "" and ages == None):
+            print("solo categoria")
             searchst = Item.objects.filter(category=categories)
             return render(request, 'filtros.html', {'data': searchst})
 
         elif (categories == None and colors == None and str(priceMax) == "" and str(priceMin) == ""):
             print("solo edad")
-            searchst = Item.objects.filter(price__gte=float(
-                priceMin), price__lte=float(priceMax))
+            searchst = Item.objects.filter(age=ages)
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (categories == None and colors == None):
+        elif (categories == None and colors == None and ages == None):
             print("solo precio")
             searchst = Item.objects.filter(price__gte=float(
                 priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (categories == None and str(priceMax) == "" and str(priceMin) == ""):
+        elif (categories == None and str(priceMax) == "" and str(priceMin) == "" and ages == None):
             print("solo color")
-            searchst = Item.objects.filter(price__gte=float(
-                priceMin), price__lte=float(priceMax))
+            searchst = Item.objects.filter(color=colors)
             return render(request, 'filtros.html', {'data': searchst})
 
-
-        elif (priceMax == "" and priceMin == "" and ages == None):
+        elif (str(priceMax) == "" and str(priceMin) == "" and ages == None):
             print("categoria y color")
             searchst = Item.objects.filter(
                 category=categories).filter(color=colors)
@@ -401,9 +397,10 @@ def filtros(request):
                 price__gte=float(priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (priceMax == "" and priceMin == "" and colors == None) : 
+        elif (str(priceMax) == "" and str(priceMin) == "" and colors == None):
             print("edad y categoria")
-            searchst = Item.objects.filter(category=categories).filter(age=ages)
+            searchst = Item.objects.filter(
+                age=ages).filter(category=categories)
             return render(request, 'filtros.html', {'data': searchst})
 
         elif (colors == None and categories == None):
@@ -412,13 +409,13 @@ def filtros(request):
                 price__gte=float(priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (categories == None and priceMax == "" and priceMin == ""):
+        elif (categories == None and str(priceMax) == "" and str(priceMin) == ""):
             print("edad y color")
-            searchst = Item.objects.filter(color=colors).filter(age=ages)
+            searchst = Item.objects.filter(age=ages).filter(color=colors)
             return render(request, 'filtros.html', {'data': searchst})
 
         else:
-            searchst = Item.objects.filter(category=categories).filter(
+            searchst = Item.objects.filter(category=categories).filter(age=ages).filter(
                 color=colors).filter(price__gte=float(priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
     else:
