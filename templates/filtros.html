@@ -25,16 +25,28 @@
         <h1>Filtros</h1>
         <form method="post">
           {% csrf_token%}
+          <!-- age -->
+          <label>Edad</label>
+          <br>
+          <input type="radio" value="A" name="age" /> Adulto |
+          <input type="radio" value="N" name="age" /> Niño |
+          <input type="radio" value="BB" name="age" /> Bebe
+          <br>
           <!-- modelo -->
+          <label>Modelo</label>
+          <br>
           <input type="radio" value="Z" name="category" /> Zapatos |
-          <input type="radio" value="NZ" name="category" /> Zapatos Niños |
-          <input type="radio" value="B" name="category" /> Botas |
+          <input type="radio" value="B" name="category" /> Botas
           <br>
           <!-- color -->
-          <input type="radio" value="negro" name="color" /> negro |
-          <input type="radio" value="blanco" name="color" /> blanco|
+          <label>Color</label>
+          <br>
+          <input type="radio" value="negro" name="color" /> Negro |
+          <input type="radio" value="blanco" name="color" /> Blanco
           <br>
           <!-- precio -->
+          <label>Precio</label>
+          <br>
           <label>MIn</label>
           <input type="input" name="price_min">
           <label>MAX</label>
