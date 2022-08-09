@@ -348,10 +348,12 @@ class PaymentView(View):
 def filtros(request):
     if request.method == "POST":
         print("aplicacndo filtros")
+        ages = request.POST.get("age")
         categories = request.POST.get("category")
         colors = request.POST.get("color")
         priceMin = request.POST.get("price_min")
         priceMax = request.POST.get("price_max")
+        print(ages)
         print(categories)
         print(colors)
         print(priceMin)
@@ -360,6 +362,12 @@ def filtros(request):
         if (colors == None and str(priceMax) == "" and str(priceMin) == ""):
             print("solor categoria")
             searchst = Item.objects.filter(category=categories)
+            return render(request, 'filtros.html', {'data': searchst})
+
+        elif (categories == None and colors == None and str(priceMax) == "" and str(priceMin) == ""):
+            print("solo edad")
+            searchst = Item.objects.filter(price__gte=float(
+                priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
 
         elif (categories == None and colors == None):
