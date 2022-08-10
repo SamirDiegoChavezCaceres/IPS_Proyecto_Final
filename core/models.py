@@ -24,6 +24,17 @@ ADDRESS_CHOICES = (
 )
 
 
+class Coments(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    text = models.TextField(max_length=200, blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True)
+    time = models.DateField(auto_now_add=True)
+
+    def _unicode__(self):
+        return self.text
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
