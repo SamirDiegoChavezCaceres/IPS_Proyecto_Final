@@ -1,0 +1,94 @@
+{% extends 'product.html' %} {% block post %}
+<div class="main_div">
+  {% for post in post %}
+  <article class="feed_one feed_principal">
+    <header class="titulo-header">
+      <h2 class="big">{{post.text}}</h2>
+    </header>
+    <div class="feed_propieda">
+      <div class="feed_avatar">
+        <a class="userAvatar" href=""></a>
+      </div>
+      <div class="feed_datalles">
+        <div class="feed_meta feed_meta_owner">
+          <a href="" class="userOnline" style="display: flex">
+            {{post.user}}
+          </a>
+        </div>
+
+        <a href="">
+          <button class="b_comentar">Comentar</button>
+        </a>
+      </div>
+    </div>
+  </article>
+  {% empty %}
+  <h1>No hay comentarios</h1>
+  {% endfor %}
+</div>
+<style>
+  .main_div {
+    margin: 10px auto;
+  }
+  header {
+    width: 55%;
+    height: 50px;
+  }
+  .feed_principal {
+    margin-bottom: 15px;
+    padding: 15px 20px 0;
+    background: #eeeeee;
+    border-radius: 5px;
+  }
+  .feed_one {
+    position: relative;
+  }
+  .titulo_header {
+    margin-bottom: 10px;
+    word-wrap: break-word;
+  }
+  .big {
+    margin-right: 5px;
+    margin-left: 0px;
+    font-weight: bold;
+    font-size: 19px;
+    display: inline;
+    line-height: 1.3;
+  }
+  .feed_propieda {
+    display: table;
+    width: 100%;
+  }
+  .feed_avatar {
+    display: table-cell;
+    width: 45%;
+  }
+  .userAvatar {
+    background-size: 100%;
+    position: relative;
+    display: block;
+    margin-right: 15px;
+    float: left;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+  }
+  .feed_detalles {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .feed_meta {
+    color: #b2b2b2;
+  }
+  .b_comentar {
+    outline: none;
+    border: none;
+    padding: 10px;
+    color: #fff;
+    background: #333;
+    border-radius: 5px;
+    display: block;
+    margin-right: 7px 0;
+  }
+</style>
+{% endblock %}

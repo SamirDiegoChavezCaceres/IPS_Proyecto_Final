@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
 
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile
+from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Coments
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -573,3 +573,11 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exist.")
                 return redirect("core:request-refund")
+
+
+def posts(request):
+    all_comments = Coments.objects.all()
+    context = {
+        'post': all_comments
+    }
+    return render(request, 'product2.html', context)

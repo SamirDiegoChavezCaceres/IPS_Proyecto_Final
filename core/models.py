@@ -4,7 +4,8 @@ from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
-
+from django.db.models.signals import pre_save, post_save
+from django.utils.text import slugify
 
 CATEGORY_CHOICES = (
     ('Z', 'Zapatos'),
@@ -33,6 +34,30 @@ class Coments(models.Model):
 
     def _unicode__(self):
         return self.text
+
+
+def new_url(instance, url=None):
+    slug = slugify(instance.text)
+
+    if url is not None:
+        slug = url
+    qs = Coments.objects.filter(slug=slug).order_by("-id")
+
+    if qs.exists():
+        new = "%s-%s" % (slug, qs.first().id)
+        return new_url(instance, url=new)
+    return slug
+
+
+def url_create(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        nombre = "Como estás?"
+        print("%s %s", nombre, "bien")
+
+        instance.slug = new_url(instance)
+
+
+pre_save.connect(url_create, sender=Coments)
 
 
 class UserProfile(models.Model):
