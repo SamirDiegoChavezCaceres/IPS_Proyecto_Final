@@ -414,10 +414,30 @@ def filtros(request):
             searchst = Item.objects.filter(age=ages).filter(color=colors)
             return render(request, 'filtros.html', {'data': searchst})
 
+        elif (colors == None ):
+            print("categoría, precio y edad")
+            searchst = Item.objects.filter(category=categories).filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(age=ages)
+            return render(request, 'filtros.html', {'data': searchst})
+
+        elif (str(priceMax) == "" and str(priceMin) == "" ):
+            print("categoría, color y edad")
+            searchst = Item.objects.filter(category=categories).filter(color=colors).filter(age=ages)
+            return render(request, 'filtros.html', {'data': searchst})
+
+        elif (ages == None ):
+            print("categoría, precio y color")
+            searchst = Item.objects.filter(category=categories).filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(color=colors)
+            return render(request, 'filtros.html', {'data': searchst})
+
+        elif (categories == None ):
+            print("precio, color y edad")
+            searchst = Item.objects.filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(color=colors).filter(age=ages)
+            return render(request, 'filtros.html', {'data': searchst})
         else:
             searchst = Item.objects.filter(category=categories).filter(age=ages).filter(
                 color=colors).filter(price__gte=float(priceMin), price__lte=float(priceMax))
             return render(request, 'filtros.html', {'data': searchst})
+
     else:
         itemdisplays = Item.objects.all()
         return render(request, 'filtros.html', {'data': itemdisplays})
