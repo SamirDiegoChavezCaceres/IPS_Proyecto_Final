@@ -6,6 +6,10 @@ from django.shortcuts import reverse
 from django_countries.fields import CountryField
 from django.db.models.signals import pre_save, post_save
 from django.utils.text import slugify
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
+
 
 CATEGORY_CHOICES = (
     ('Z', 'Zapatos'),
@@ -32,8 +36,20 @@ class Coments(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     time = models.DateField(auto_now_add=True)
 
-    def _unicode__(self):
+    def __unicode__(self):
         return self.text
+
+    def get_absolute_url(self):
+        return reverse("core:post_id", kwargs={"pk": self.pk})
+
+    def respuestas(self):
+        instance = self
+        qs = Respuestas.objects.filtro_instancia(instance)
+        return qs
+
+    def get_content_type(self):
+        content_type = ContentType.objects.get_for_model(Coments)
+        return content_type
 
 
 def new_url(instance, url=None):
@@ -58,6 +74,42 @@ def url_create(sender, instance, *args, **kwargs):
 
 
 pre_save.connect(url_create, sender=Coments)
+
+
+class ComentManager(models.Manager):
+    def filtro_instancia(self, instance):
+        content_type = ContentType.objects.get_for_model(instance.__class__)
+        obj_id = instance.id
+        qs = super(ComentManager, self).filter(
+            content_type=content_type, object_id=obj_id)
+        return qs
+
+
+class Respuestas(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
+    texto = models.TextField(verbose_name="Comentario")
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    padre = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    objects = ComentManager()
+
+    class Meta:
+        ordering = ['-time']
+
+    def get_absolute_url(self):
+        return reverse("core:comentario_id", kwargs={"pk": self.pk})
+
+    def __unicode__(self):
+        return self.texto[:15]
+
+    def Hijo(self):
+        return Respuestas.objects.filter(padre=self)
 
 
 class UserProfile(models.Model):

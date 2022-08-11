@@ -1,5 +1,7 @@
+from multiprocessing import context
 import random
 import string
+from xml.etree.ElementTree import Comment
 
 import stripe
 from django.conf import settings
@@ -11,10 +13,11 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
+from django.http import HttpResponseRedirect, HttpResponse
 
-from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Coments
-
+from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm, FormComentarios
+from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Coments, Respuestas
+from django.contrib.contenttypes.models import ContentType
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -581,3 +584,74 @@ def posts(request):
         'post': all_comments
     }
     return render(request, 'product2.html', context)
+
+
+def comentario_id(request, pk):
+    instance = get_object_or_404(Respuestas, pk=pk)
+    context = {
+        "respuesta": instance
+    }
+    return render(request, 'instance.html', context)
+
+
+def post_id(request, pk):
+    instance = get_object_or_404(Coments, pk=pk)
+
+    inicializar_datos = {
+        "content_type": instance.get_content_type,
+        "object_id": instance.id
+    }
+    form = FormComentarios(request.POST or None, initial=inicializar_datos)
+
+    if form.is_valid():
+        models = form.cleaned_data.get("content_type")
+        content_type = ContentType.objects.get(model=models)
+        obj_id = form.cleaned_data.get("object_id")
+        texto_data = form.cleaned_data.get("texto")
+        padre_obj = None
+        try:
+            padre_id = int(request.POST.get("padre_identificador"))
+        except:
+            padre_id = None
+
+        if padre_id:
+            padre_qs = Respuestas.objects.filter(id=padre_id)
+            if padre_id.exists() and padre_qs.count() == 1:
+                padre_obj = padre_qs.first()
+
+        comentarios, created = Respuestas.objects.get_or_create(
+            usuario=request.user,
+            content_type=content_type,
+            object_id=obj_id,
+            texto=texto_data,
+            padre=padre_obj
+        )
+        return HttpResponseRedirect(comentarios.content_object.get_absolute_url())
+
+        if created:
+            print("Fue creado")
+    ver_comentarios = instance.respuestas
+    context = {
+        'form': form,
+        'instance': instance,
+        'ver_comentarios': ver_comentarios
+    }
+    return render(request, 'comentar.html', context)
+
+
+def eliminarComentarios(request, id):
+    instance = get_object_or_404(Respuestas, id=id)
+    if instance.usuario != request.user:
+        response = HttpResponse(
+            "Tu no tienes permiso pára realizar esta acción")
+        response.status_code = 403
+        return response
+    if request.method == 'POST':
+        padre_instance_url = instance.content_object.get_absolute_url()
+        instance.delete()
+        messages.success(request, "Comentario Eliminado")
+        return HttpResponseRedirect(padre_instance_url)
+    context = {
+        'instance': instance
+    }
+    return render(request, 'eliminar.html', context)

@@ -9,6 +9,13 @@ PAYMENT_CHOICES = (
 )
 
 
+class FormComentarios(forms.Form):
+    content_type = forms.CharField(widget=forms.HiddenInput)
+    object_id = forms.IntegerField(widget=forms.HiddenInput)
+
+    texto = forms.CharField(widget=forms.Textarea)
+
+
 class CheckoutForm(forms.Form):
     shipping_address = forms.CharField(required=False)
     shipping_address2 = forms.CharField(required=False)

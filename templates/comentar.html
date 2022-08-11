@@ -1,0 +1,160 @@
+{% extends 'product.html' %} {% block post %}
+<div class="main_div">
+  <article class="feed_principal">
+    <header class="titulo_header">
+      <h2 class="big">{{instance.text}}</h2>
+    </header>
+
+    <div class="feed_avatar">
+      <a href="" style="background-image: url()" class="UserAvatar"> </a>
+    </div>
+
+    <div class="feed_detalles">
+      <div class="feed_meta">
+        <a href=""> {{instance.usuario.username}} </a>
+      </div>
+      <form method="POST">
+        {% csrf_token %} {{form.as_p}}
+        <button type="submit" class="btn_comentar">Comentar</button>
+      </form>
+    </div>
+  </article>
+  <header>
+    {% if ver_comentarios.count > 1 %} Hay {{ver_comentarios.count}}<strong>
+      Comentarios</strong
+    >
+    {% else%} Hay {{ver_comentarios.count}}<strong> Comentario</strong>
+    {% endif %}
+  </header>
+
+  {% for ver_comentarios in ver_comentarios %}
+  <div class="div_ver_comentarios">
+    <strong>
+      {{ver_comentarios.usuario}}<small> --- {{ver_comentarios.time}}</small>
+    </strong>
+    <p>{{ver_comentarios.texto}}</p>
+    {% if request.user == ver_comentarios.usuario %}
+    <a href="http://127.0.0.1:8000/delete/{{ver_comentarios.pk}}/">
+      Eliminar
+    </a>
+    <br />
+    {% else %} {% endif %}
+    <button class="b_responder" style="display: block">Responder</button>
+    <div class="abrir_caja_reply">
+      <form method="POST">
+        <input
+          type="hidden"
+          name="padre_identificador"
+          value="{{ver_comentarios.id}}"
+        />
+        {% csrf_token %} {{form}}
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+  <hr />
+  {% empty %}
+  <h1>Publica el primer Comentario</h1>
+  {% endfor %}
+</div>
+<script>
+  $(".b_responder").click(function (e) {
+    e.preventDefault();
+    $(this).next(".abrir_caja_reply").fadeToggle();
+  });
+</script>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Rubik+Marker+Hatch&display=swap");
+
+  p,
+  h1,
+  h2,
+  h3 {
+    font-family: "Rubik Marker Hatch", cursive;
+  }
+  .div_ver_comentarios {
+    margin: 10px 0;
+  }
+  .abrir_caja_reply {
+  }
+  .main_div {
+    width: 100%;
+    margin: 0;
+  }
+  .feed_principal {
+    margin-bottom: 15px;
+    padding: 15px 20px 0;
+    position: relative;
+    background: #ff3a;
+    border-radius: 5px;
+    height: 350px;
+  }
+  .titulo_header {
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    height: 50px;
+  }
+  .big {
+    font-weight: bold;
+    font-size: 19px;
+    display: inline;
+    margin: 5px;
+    line-height: 1.3;
+  }
+  .feed_propieda {
+    display: table;
+    width: 100%;
+  }
+  .feed_avatar {
+    display: table-cell;
+    width: 45%;
+  }
+  .UserAvatar {
+    background: transparent no-repeat 0 0;
+    background-size: 100%;
+    position: relative;
+    display: block;
+    margin-right: 15px;
+    float: left;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+  }
+  .feed_detalles {
+    font-size: 12px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .feed_meta {
+    color: #b2b2bb;
+  }
+  .btn_comentar {
+    display: none;
+    padding: 7px;
+    width: 150px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+    color: #fff;
+    background: #333;
+    border-radius: 5px;
+  }
+  #id_texto {
+    width: 65%;
+    box-sizing: boder-box;
+    font: inherit;
+    direction: ltr;
+    outline: none;
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid #dee0e1;
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100px;
+    max-height: 150px;
+  }
+</style>
+{% endblock %}
