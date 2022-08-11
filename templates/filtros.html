@@ -6,7 +6,7 @@
   <div class="container">
 
     <!--Navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-10 mt-3 mb-5">
+    <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-10 mt-3">
 
       <!-- Navbar brand -->
       <span class="navbar-brand">"Slogan":</span>
@@ -21,6 +21,7 @@
 
     <!--Section: Products v.3-->
     <section class="text-center mb-4">
+      <div class="mdb-color fw-bold text-white ">
       <h1>Filtros</h1>
       <form method="post">
         {% csrf_token%}
@@ -49,6 +50,7 @@
         <br>
         <!-- boton de busqueda -->
         <input type="submit" class="btn btn-outline-primary" value="Filtrar" />
+      </div>
         <br>
         <br>
         <div class="row wow fadeIn">
