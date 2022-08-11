@@ -6,7 +6,7 @@
   <div class="container">
 
     <!--Navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
+    <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-10 mt-3 mb-5">
 
       <!-- Navbar brand -->
       <span class="navbar-brand">"Slogan":</span>
@@ -21,84 +21,80 @@
 
     <!--Section: Products v.3-->
     <section class="text-center mb-4">
-      <center>
-        <h1>Filtros</h1>
-        <form method="post">
-          {% csrf_token%}
-          <!-- age -->
-          <label>Edad</label>
-          <br>
-          <input type="radio" value="A" name="age" /> Adulto |
-          <input type="radio" value="N" name="age" /> Niño |
-          <input type="radio" value="BB" name="age" /> Bebe
-          <br>
-          <!-- modelo -->
-          <label>Modelo</label>
-          <br>
-          <input type="radio" value="Z" name="category" /> Zapatos |
-          <input type="radio" value="B" name="category" /> Botas
-          <br>
-          <!-- color -->
-          <label>Color</label>
-          <br>
-          <input type="radio" value="Negro" name="color" /> Negro |
-          <input type="radio" value="Blanco" name="color" /> Blanco
-          <br>
-          <!-- precio -->
-          <label>Precio</label>
-          <br>
-          <label>MIn</label>
-          <input type="input" name="price_min">
-          <label>MAX</label>
-          <input type="input" name="price_max">
+      <h1>Filtros</h1>
+      <form method="post">
+        {% csrf_token%}
+        <!-- age -->
+        <label>Edad --> </label>
+        <input type="radio" value="A" name="age" /> Adulto |
+        <input type="radio" value="N" name="age" /> Niño |
+        <input type="radio" value="BB" name="age" /> Bebe
+        <br>
+        <!-- modelo -->
+        <label>Modelo --> </label>
+        <input type="radio" value="Z" name="category" /> Zapatos |
+        <input type="radio" value="B" name="category" /> Botas
+        <br>
+        <!-- color -->
+        <label>Color --> </label>
+        <input type="radio" value="Negro" name="color" /> Negro |
+        <input type="radio" value="Blanco" name="color" /> Blanco
+        <br>
+        <!-- precio -->
+        <label>Precio --> </label>
+        <label>Min</label>
+        <input type="input" name="price_min">
+        <label>Max</label>
+        <input type="input" name="price_max">
+        <br>
+        <!-- boton de busqueda -->
+        <input type="submit" value="Filtrar" />
+        <br>
+        <div class="row wow fadeIn">
 
-          <!-- boton de busqueda -->
-          <input type="submit" value="search" />
-          <div class="row wow fadeIn">
+          {% for item in data %}
+          <div class="col-lg-3 col-md-6 mb-4">
 
-            {% for item in data %}
-            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card">
 
-              <div class="card">
+              <div class="view overlay">
+                <img src="{{ item.image.url }}" class="card-img-top">
+                <a href="{{ item.get_absolute_url }}">
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
 
-                <div class="view overlay">
-                  <img src="{{ item.image.url }}" class="card-img-top">
-                  <a href="{{ item.get_absolute_url }}">
-                    <div class="mask rgba-white-slight"></div>
-                  </a>
-                </div>
+              <div class="card-body text-center">
+                <a href="" class="grey-text">
+                  <h5>{{ item.get_category_display }}</h5>
+                </a>
+                <h5>
+                  <strong>
+                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
+                      <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
+                    </a>
+                  </strong>
+                </h5>
 
-                <div class="card-body text-center">
-                  <a href="" class="grey-text">
-                    <h5>{{ item.get_category_display }}</h5>
-                  </a>
-                  <h5>
-                    <strong>
-                      <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
-                        <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
-                      </a>
-                    </strong>
-                  </h5>
-
-                  <h4 class="font-weight-bold blue-text">
-                    <strong>$
-                      {% if item.discount_price %}
-                      {{ item.discount_price }}
-                      {% else %}
-                      {{ item.price }}
-                      {% endif %}
-                    </strong>
-                  </h4>
-
-                </div>
+                <h4 class="font-weight-bold blue-text">
+                  <strong>S/
+                    {% if item.discount_price %}
+                    {{ item.discount_price }}
+                    {% else %}
+                    {{ item.price }}
+                    {% endif %}
+                  </strong>
+                </h4>
 
               </div>
 
             </div>
-            {% endfor %}
+
           </div>
-        </form>
-      </center>
+          {% endfor %}
+        </div>
+      </form>
+
 
 
     </section>
