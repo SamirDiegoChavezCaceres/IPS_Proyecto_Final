@@ -1,96 +1,82 @@
-{% extends 'product.html' %} {% block post %}
+{% extends 'base.html' %} {% block content %}
 <div class="main_div">
   <article class="feed_principal">
+    <div class="feed_meta">
+      <a href=""> Estas respondiendo a: {{instance.user}}</a>
+    </div>
     <header class="titulo_header">
       <h2 class="big">{{instance.text}}</h2>
     </header>
-
-    <div class="feed_avatar">
-      <a href="" style="background-image: url()" class="UserAvatar"> </a>
-    </div>
-
     <div class="feed_detalles">
-      <div class="feed_meta">
-        <a href=""> {{instance.usuario.username}} </a>
-      </div>
       <form method="POST">
         {% csrf_token %} {{form.as_p}}
         <button type="submit" class="btn_comentar">Comentar</button>
       </form>
     </div>
   </article>
-  <header>
-    {% if ver_comentarios.count > 1 %} Hay {{ver_comentarios.count}}<strong>
-      Comentarios</strong
+  <h3>
+    {% if ver_comentarios.count != 1 %} Hay {{ver_comentarios.count}}<strong>
+      Respuestas</strong
     >
-    {% else%} Hay {{ver_comentarios.count}}<strong> Comentario</strong>
+    {% else%} Hay {{ver_comentarios.count}}<strong> Respuesta</strong>
     {% endif %}
-  </header>
+  </h3>
 
   {% for ver_comentarios in ver_comentarios %}
   <div class="div_ver_comentarios">
-    <strong>
-      {{ver_comentarios.usuario}}<small> --- {{ver_comentarios.time}}</small>
-    </strong>
-    <p>{{ver_comentarios.texto}}</p>
+    <strong> {{ver_comentarios.usuario}} </strong>
+    <small>{{ver_comentarios.time}}</small>
+    <p class="content">{{ver_comentarios.texto}}</p>
     {% if request.user == ver_comentarios.usuario %}
-    <a href="http://127.0.0.1:8000/delete/{{ver_comentarios.pk}}/">
+    <a
+      href="http://127.0.0.1:8000/delete/{{ver_comentarios.pk}}/"
+      class="delete"
+    >
       Eliminar
     </a>
     <br />
     {% else %} {% endif %}
-    <button class="b_responder" style="display: block">Responder</button>
-    <div class="abrir_caja_reply">
-      <form method="POST">
-        <input
-          type="hidden"
-          name="padre_identificador"
-          value="{{ver_comentarios.id}}"
-        />
-        {% csrf_token %} {{form}}
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
   </div>
   <hr />
   {% empty %}
   <h1>Publica el primer Comentario</h1>
   {% endfor %}
 </div>
-<script>
-  $(".b_responder").click(function (e) {
-    e.preventDefault();
-    $(this).next(".abrir_caja_reply").fadeToggle();
-  });
-</script>
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Rubik+Marker+Hatch&display=swap");
-
-  p,
-  h1,
-  h2,
-  h3 {
-    font-family: "Rubik Marker Hatch", cursive;
-  }
   .div_ver_comentarios {
     margin: 10px 0;
+    padding: 5px;
+    background: #eeeeee;
+    width: 25%;
   }
-  .abrir_caja_reply {
+  .content {
+    margin: 20px;
+    padding-left: 30px;
+  }
+  .delete {
+    text-decoration: none;
+    margin-left: 70%;
+  }
+  small {
+    margin-left: 49%;
   }
   .main_div {
     width: 100%;
     margin: 0;
   }
   .feed_principal {
+    margin-left: 400px;
     margin-bottom: 15px;
     padding: 15px 20px 0;
     position: relative;
-    background: #ff3a;
+    background: #eeeeee;
     border-radius: 5px;
+    width: 50%;
     height: 350px;
   }
   .titulo_header {
-    margin-bottom: 10px;
+    margin-left: 90px;
+    margin-bottom: 0px;
     word-wrap: break-word;
     height: 50px;
   }
@@ -109,23 +95,13 @@
     display: table-cell;
     width: 45%;
   }
-  .UserAvatar {
-    background: transparent no-repeat 0 0;
-    background-size: 100%;
-    position: relative;
-    display: block;
-    margin-right: 15px;
-    float: left;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-  }
   .feed_detalles {
     font-size: 12px;
-    display: table-cell;
+    display: flex;
     vertical-align: middle;
   }
   .feed_meta {
+    margin-right: 100px;
     color: #b2b2bb;
   }
   .btn_comentar {
@@ -140,6 +116,7 @@
     color: #fff;
     background: #333;
     border-radius: 5px;
+    font-size: 18px;
   }
   #id_texto {
     width: 65%;
@@ -155,6 +132,9 @@
     max-width: 100%;
     min-height: 100px;
     max-height: 150px;
+  }
+  form {
+    margin-left: 220px;
   }
 </style>
 {% endblock %}

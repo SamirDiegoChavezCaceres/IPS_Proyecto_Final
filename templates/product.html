@@ -65,7 +65,12 @@
 
     <!--Grid row-->
     <!--Grid column-->
-    <div class="main">{% block post %} {% endblock %}</div>
+    <div class="main">
+      <a href="http://127.0.0.1:8000/comment/">
+        <button class="b_comentar">¿TIENES ALGUNA DUDA?, PRESIONA AQUÍ</button>
+      </a>
+      {% block post %} {% endblock %}
+    </div>
     <!--Grid column-->
 
     <!--Grid row-->
@@ -76,5 +81,19 @@
     <!--Grid row-->
   </div>
 </main>
-
+<style>
+  button {
+    background: #98ca3f;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    border-bottom: 5px solid #6d932b;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    margin-left: 400px;
+  }
+</style>
 {% endblock content %}
