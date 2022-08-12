@@ -10,9 +10,10 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
-
-from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile
+from django.http import HttpResponseRedirect, HttpResponse
+from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm, FormComentarios
+from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Coments, Respuestas
+from django.contrib.contenttypes.models import ContentType
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -414,24 +415,28 @@ def filtros(request):
             searchst = Item.objects.filter(age=ages).filter(color=colors)
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (colors == None ):
+        elif (colors == None):
             print("categoría, precio y edad")
-            searchst = Item.objects.filter(category=categories).filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(age=ages)
+            searchst = Item.objects.filter(category=categories).filter(
+                price__gte=float(priceMin), price__lte=float(priceMax)).filter(age=ages)
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (str(priceMax) == "" and str(priceMin) == "" ):
+        elif (str(priceMax) == "" and str(priceMin) == ""):
             print("categoría, color y edad")
-            searchst = Item.objects.filter(category=categories).filter(color=colors).filter(age=ages)
+            searchst = Item.objects.filter(category=categories).filter(
+                color=colors).filter(age=ages)
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (ages == None ):
+        elif (ages == None):
             print("categoría, precio y color")
-            searchst = Item.objects.filter(category=categories).filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(color=colors)
+            searchst = Item.objects.filter(category=categories).filter(
+                price__gte=float(priceMin), price__lte=float(priceMax)).filter(color=colors)
             return render(request, 'filtros.html', {'data': searchst})
 
-        elif (categories == None ):
+        elif (categories == None):
             print("precio, color y edad")
-            searchst = Item.objects.filter(price__gte=float(priceMin), price__lte=float(priceMax)).filter(color=colors).filter(age=ages)
+            searchst = Item.objects.filter(price__gte=float(priceMin), price__lte=float(
+                priceMax)).filter(color=colors).filter(age=ages)
             return render(request, 'filtros.html', {'data': searchst})
         else:
             searchst = Item.objects.filter(category=categories).filter(age=ages).filter(
@@ -615,3 +620,80 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exist.")
                 return redirect("core:request-refund")
+
+
+def posts(request):
+    all_comments = Coments.objects.all()
+    context = {
+        'post': all_comments
+    }
+    return render(request, 'product2.html', context)
+
+
+def comentario_id(request, pk):
+    instance = get_object_or_404(Respuestas, pk=pk)
+    context = {
+        "respuesta": instance
+    }
+    return render(request, 'instance.html', context)
+
+
+def post_id(request, pk):
+    instance = get_object_or_404(Coments, pk=pk)
+
+    inicializar_datos = {
+        "content_type": instance.get_content_type,
+        "object_id": instance.id
+    }
+    form = FormComentarios(request.POST or None, initial=inicializar_datos)
+
+    if form.is_valid():
+        models = form.cleaned_data.get("content_type")
+        content_type = ContentType.objects.get(model=models)
+        obj_id = form.cleaned_data.get("object_id")
+        texto_data = form.cleaned_data.get("texto")
+        padre_obj = None
+        try:
+            padre_id = int(request.POST.get("padre_identificador"))
+        except:
+            padre_id = None
+
+        if padre_id:
+            padre_qs = Respuestas.objects.filter(id=padre_id)
+            if padre_id.exists() and padre_qs.count() == 1:
+                padre_obj = padre_qs.first()
+
+        comentarios, created = Respuestas.objects.get_or_create(
+            usuario=request.user,
+            content_type=content_type,
+            object_id=obj_id,
+            texto=texto_data,
+            padre=padre_obj
+        )
+        return HttpResponseRedirect(comentarios.content_object.get_absolute_url())
+
+    ver_comentarios = instance.respuestas
+    context = {
+        'form': form,
+        'instance': instance,
+        'ver_comentarios': ver_comentarios
+    }
+    return render(request, 'comentar.html', context)
+
+
+def eliminarComentarios(request, id):
+    instance = get_object_or_404(Respuestas, id=id)
+    if instance.usuario != request.user:
+        response = HttpResponse(
+            "Tu no tienes permiso pára realizar esta acción")
+        response.status_code = 403
+        return response
+    if request.method == 'POST':
+        padre_instance_url = instance.content_object.get_absolute_url()
+        instance.delete()
+        messages.success(request, "Comentario Eliminado")
+        return HttpResponseRedirect(padre_instance_url)
+    context = {
+        'instance': instance
+    }
+    return render(request, 'eliminar.html', context)
